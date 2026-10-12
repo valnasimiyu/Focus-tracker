@@ -1,0 +1,398 @@
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+
+  :root{
+    --bg: #1a2129;
+    --panel: #212b35;
+    --panel-2: #26313c;
+    --line: #364452;
+    --text: #ece7dd;
+    --text-dim: #8b98a5;
+    --amber: #e3a857;
+    --amber-dim: #7a6640;
+    --teal: #5b8a9a;
+    --rose: #c1666b;
+  }
+
+  * { box-sizing: border-box; }
+
+  #focus-tracker-root{
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    padding: 28px 20px 40px;
+    border-radius: 14px;
+    max-width: 640px;
+    margin: 0 auto;
+    min-height: 400px;
+  }
+
+  .ft-prompt{
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--text-dim);
+    font-size: 13px;
+    margin-bottom: 4px;
+  }
+  .ft-prompt span{ color: var(--amber); }
+
+  .ft-title{
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 600;
+    font-size: 22px;
+    margin: 0 0 22px 0;
+    letter-spacing: -0.02em;
+  }
+
+  .ft-section-label{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--text-dim);
+    margin: 30px 0 12px;
+  }
+  .ft-section-label:first-of-type{ margin-top: 0; }
+
+  /* Commit graph */
+  .ft-graph{
+    display: flex;
+    align-items: flex-end;
+    gap: 6px;
+    padding: 14px 14px 10px;
+    background: var(--panel);
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    overflow-x: auto;
+  }
+  .ft-node-wrap{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    min-width: 22px;
+  }
+  .ft-node{
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid var(--line);
+    background: transparent;
+    position: relative;
+  }
+  .ft-node.full{ background: var(--amber); border-color: var(--amber); }
+  .ft-node.partial{ background: conic-gradient(var(--amber) var(--pct,50%), transparent 0); border-color: var(--amber-dim); }
+  .ft-node.today{ box-shadow: 0 0 0 3px rgba(227,168,87,0.25); }
+  .ft-daylabel{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    color: var(--text-dim);
+  }
+  .ft-streak{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--amber);
+    margin-top: 10px;
+  }
+
+  /* Habit checklist */
+  .ft-habits{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .ft-habit{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: border-color .15s ease;
+  }
+  .ft-habit:hover{ border-color: var(--amber-dim); }
+  .ft-habit.done{ border-color: var(--amber); background: var(--panel-2); }
+  .ft-check{
+    width: 20px;
+    height: 20px;
+    border-radius: 5px;
+    border: 2px solid var(--text-dim);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    color: var(--bg);
+  }
+  .ft-habit.done .ft-check{ background: var(--amber); border-color: var(--amber); }
+  .ft-habit-text{ font-size: 14.5px; line-height: 1.35; }
+
+  /* Timer */
+  .ft-timer-box{
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+  }
+  .ft-timer-display{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 44px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    color: var(--amber);
+    margin-bottom: 4px;
+  }
+  .ft-timer-mode{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 16px;
+  }
+  .ft-timer-controls{
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+  }
+  .ft-btn{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12.5px;
+    background: var(--panel-2);
+    border: 1px solid var(--line);
+    color: var(--text);
+    padding: 9px 16px;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: background .15s ease;
+  }
+  .ft-btn:hover{ background: var(--line); }
+  .ft-btn.primary{ background: var(--amber); color: var(--bg); border-color: var(--amber); font-weight: 600; }
+  .ft-btn.primary:hover{ background: #edb968; }
+
+  .ft-note{
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 16px;
+    line-height: 1.6;
+  }
+  .ft-loading{
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--text-dim);
+    font-size: 13px;
+    padding: 40px 0;
+    text-align: center;
+  }
+</style>
+
+<div id="focus-tracker-root">
+  <div class="ft-loading" id="ft-loading">loading your log...</div>
+</div>
+
+<script>
+(function(){
+  const root = document.getElementById('focus-tracker-root');
+
+  const DEFAULT_HABITS = [
+    "Phone in another room during a study/coding block",
+    "Completed at least one 25-min focus session",
+    "No social media until first session is done"
+  ];
+
+  function todayKey(d){
+    d = d || new Date();
+    return d.toISOString().slice(0,10);
+  }
+
+  function dayLabel(dateStr){
+    const d = new Date(dateStr + 'T00:00:00');
+    return ['S','M','T','W','T','F','S'][d.getDay()];
+  }
+
+  function last14Dates(){
+    const arr = [];
+    for(let i=13;i>=0;i--){
+      const d = new Date();
+      d.setDate(d.getDate()-i);
+      arr.push(todayKey(d));
+    }
+    return arr;
+  }
+
+  let habits = DEFAULT_HABITS.slice();
+  let entries = {}; // dateStr -> [bool,bool,bool]
+  let timerSeconds = 25*60;
+  let timerMode = 'focus'; // focus | break
+  let timerRunning = false;
+  let timerInterval = null;
+
+  async function loadData(){
+    try{
+      const h = await window.storage.get('habits-list', false);
+      if(h && h.value) habits = JSON.parse(h.value);
+    }catch(e){ /* not set yet, use defaults */ }
+
+    const dates = last14Dates();
+    for(const d of dates){
+      try{
+        const r = await window.storage.get('entry:' + d, false);
+        if(r && r.value) entries[d] = JSON.parse(r.value);
+      }catch(e){ /* no entry that day */ }
+    }
+  }
+
+  async function saveEntry(dateStr, arr){
+    entries[dateStr] = arr;
+    try{
+      await window.storage.set('entry:' + dateStr, JSON.stringify(arr), false);
+    }catch(e){
+      console.error('save failed', e);
+    }
+  }
+
+  function computeStreak(){
+    const dates = last14Dates().slice().reverse();
+    let streak = 0;
+    for(const d of dates){
+      const arr = entries[d];
+      const allDone = arr && arr.length === habits.length && arr.every(Boolean);
+      if(allDone) streak++;
+      else break;
+    }
+    return streak;
+  }
+
+  function render(){
+    const dates = last14Dates();
+    const today = todayKey();
+    const todayEntry = entries[today] || habits.map(()=>false);
+    const streak = computeStreak();
+
+    let graphHtml = '<div class="ft-graph">';
+    for(const d of dates){
+      const arr = entries[d];
+      let cls = 'ft-node';
+      let style = '';
+      if(arr && arr.length){
+        const doneCount = arr.filter(Boolean).length;
+        const pct = Math.round((doneCount/habits.length)*100);
+        if(pct === 100) cls += ' full';
+        else if(pct > 0){ cls += ' partial'; style = `style="--pct:${pct}%"`; }
+      }
+      if(d === today) cls += ' today';
+      graphHtml += `<div class="ft-node-wrap">
+        <div class="${cls}" ${style} title="${d}"></div>
+        <div class="ft-daylabel">${dayLabel(d)}</div>
+      </div>`;
+    }
+    graphHtml += '</div>';
+
+    let habitsHtml = '<div class="ft-habits">';
+    habits.forEach((h, i) => {
+      const done = !!todayEntry[i];
+      habitsHtml += `<div class="ft-habit ${done ? 'done' : ''}" data-idx="${i}">
+        <div class="ft-check">${done ? '✓' : ''}</div>
+        <div class="ft-habit-text">${h}</div>
+      </div>`;
+    });
+    habitsHtml += '</div>';
+
+    const mm = String(Math.floor(timerSeconds/60)).padStart(2,'0');
+    const ss = String(timerSeconds%60).padStart(2,'0');
+
+    root.innerHTML = `
+      <div class="ft-prompt"><span>valerian@focus</span>:~$ log --habits --last-14d</div>
+      <div class="ft-title">Focus log</div>
+
+      <div class="ft-section-label">Commit history</div>
+      ${graphHtml}
+      <div class="ft-streak">current streak: ${streak} day${streak===1?'':'s'}${streak===0 ? ' — start one today' : ' 🔥'}</div>
+
+      <div class="ft-section-label">Today's commit</div>
+      ${habitsHtml}
+
+      <div class="ft-section-label">Focus timer</div>
+      <div class="ft-timer-box">
+        <div class="ft-timer-display" id="ft-display">${mm}:${ss}</div>
+        <div class="ft-timer-mode" id="ft-mode">${timerMode === 'focus' ? '25-min focus session' : '5-min break'}</div>
+        <div class="ft-timer-controls">
+          <button class="ft-btn primary" id="ft-start">${timerRunning ? 'Pause' : 'Start'}</button>
+          <button class="ft-btn" id="ft-reset">Reset</button>
+          <button class="ft-btn" id="ft-switch">${timerMode === 'focus' ? 'Switch to break' : 'Switch to focus'}</button>
+        </div>
+      </div>
+
+      <div class="ft-note">Phone goes in another room before you hit start. When the timer ends, come back and check off today's session.</div>
+    `;
+
+    root.querySelectorAll('.ft-habit').forEach(el => {
+      el.addEventListener('click', async () => {
+        const idx = parseInt(el.getAttribute('data-idx'));
+        const arr = (entries[today] || habits.map(()=>false)).slice();
+        arr[idx] = !arr[idx];
+        await saveEntry(today, arr);
+        render();
+      });
+    });
+
+    document.getElementById('ft-start').addEventListener('click', toggleTimer);
+    document.getElementById('ft-reset').addEventListener('click', resetTimer);
+    document.getElementById('ft-switch').addEventListener('click', switchMode);
+  }
+
+  function toggleTimer(){
+    if(timerRunning){
+      clearInterval(timerInterval);
+      timerRunning = false;
+    } else {
+      timerRunning = true;
+      timerInterval = setInterval(() => {
+        timerSeconds--;
+        if(timerSeconds <= 0){
+          clearInterval(timerInterval);
+          timerRunning = false;
+          timerSeconds = 0;
+          updateTimerDisplayOnly();
+          setTimeout(() => {
+            alert(timerMode === 'focus' ? "Session done. Nice work — check off today's session below." : "Break's over. Ready for another session?");
+            timerMode = timerMode === 'focus' ? 'break' : 'focus';
+            timerSeconds = timerMode === 'focus' ? 25*60 : 5*60;
+            render();
+          }, 50);
+          return;
+        }
+        updateTimerDisplayOnly();
+      }, 1000);
+    }
+    render();
+  }
+
+  function updateTimerDisplayOnly(){
+    const disp = document.getElementById('ft-display');
+    if(!disp) return;
+    const mm = String(Math.floor(timerSeconds/60)).padStart(2,'0');
+    const ss = String(timerSeconds%60).padStart(2,'0');
+    disp.textContent = `${mm}:${ss}`;
+  }
+
+  function resetTimer(){
+    clearInterval(timerInterval);
+    timerRunning = false;
+    timerSeconds = timerMode === 'focus' ? 25*60 : 5*60;
+    render();
+  }
+
+  function switchMode(){
+    clearInterval(timerInterval);
+    timerRunning = false;
+    timerMode = timerMode === 'focus' ? 'break' : 'focus';
+    timerSeconds = timerMode === 'focus' ? 25*60 : 5*60;
+    render();
+  }
+
+  loadData().then(render).catch(() => render());
+})();
+</script>
